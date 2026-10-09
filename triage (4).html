@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2B6CB0">
+<title>แบบประเมินอาการเบื้องต้น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ===== Color Palette: Soft Blue / Warm Medical ===== */
+    --brand:#2B6CB0; --brand-d:#1E4E8C; --brand-soft:#EBF2FB;
+    --bg:#F5F8FC; --card:#FFFFFF;
+    --ink:#1F2D3D; --muted:#5A6B7B; --line:#E3EAF2;
+    --red:#C0392B;   --red-bg:#FDEDEA;   --red-line:#F3C4BD;
+    --amber:#B9770E; --amber-bg:#FDF4E3; --amber-line:#F0DBA8;
+    --green:#1E8A5B; --green-bg:#E7F6EE; --green-line:#B4E0C8;
+    /* alias เดิมให้ชี้มาที่ brand เพื่อความเข้ากันได้ */
+    --navy:#2B6CB0; --navy-d:#1E4E8C; --accent:#2B6CB0;
+    --fs:18px; --radius:14px;
+  }
+  /* ===== โหมดคอนทราสต์สูง (High Contrast) ===== */
+  body.hc{
+    --brand:#0B3D91; --brand-d:#082B66; --brand-soft:#E3ECFF;
+    --navy:#0B3D91; --navy-d:#082B66; --accent:#0B3D91;
+    --bg:#ffffff; --card:#ffffff; --ink:#000000; --muted:#1a1a1a; --line:#000000;
+    --red:#B00000; --red-bg:#ffffff; --red-line:#B00000;
+    --amber:#8A5A00; --amber-bg:#ffffff; --amber-line:#8A5A00;
+    --green:#00662E; --green-bg:#ffffff; --green-line:#00662E;
+  }
+  body.hc .card, body.hc .advice, body.hc .facility, body.hc .kbox,
+  body.hc .refs, body.hc .opt, body.hc .hotline{border-width:2px;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:"Sarabun","Noto Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.7;
+    font-size:var(--fs); -webkit-text-size-adjust:100%;
+  }
+  a:focus-visible, button:focus-visible, summary:focus-visible, .opt:focus-visible{
+    outline:3px solid var(--brand); outline-offset:2px; border-radius:6px;
+  }
+  .app{max-width:620px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:var(--bg);}
+  header{
+    background:var(--brand);
+    color:#fff; padding:16px 20px; position:sticky; top:0; z-index:10;
+    box-shadow:0 2px 8px rgba(43,108,176,.18);
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand .mark{
+    flex:0 0 42px; height:42px; background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.6); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; letter-spacing:.5px;
+  }
+  header h1{margin:0; font-size:18px; font-weight:700; letter-spacing:.2px;}
+  header p{margin:2px 0 0; font-size:12px; opacity:.9; font-weight:400;}
+  .a11y-bar{display:flex; align-items:center; gap:8px; margin-top:14px; flex-wrap:wrap;}
+  .a11y-bar .lbl{font-size:11.5px; opacity:.9; margin-right:2px;}
+  .a11y-btn{
+    min-width:40px; height:34px; padding:0 10px; border:1.5px solid rgba(255,255,255,.55); background:rgba(255,255,255,.12);
+    color:#fff; border-radius:8px; font-family:inherit; font-weight:700; cursor:pointer; font-size:13px; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .a11y-btn[aria-pressed="true"]{background:#fff; color:var(--brand); border-color:#fff;}
+  .a11y-btn.big{font-size:16px;}
+  .progress{height:6px; background:rgba(255,255,255,.28); margin-top:14px; overflow:hidden; border-radius:6px;}
+  .progress > div{height:100%; background:#fff; width:0; transition:width .3s ease; border-radius:6px;}
+  main{flex:1; padding:22px 20px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px 22px; box-shadow:0 2px 10px rgba(43,108,176,.07);}
+  .step-count{font-size:.72em; color:var(--brand); margin-bottom:8px; font-weight:700; letter-spacing:.3px;}
+  .q-title{font-size:1.12em; font-weight:700; margin:0 0 6px; color:var(--ink); line-height:1.4;}
+  .q-sub{font-size:.78em; color:var(--muted); margin:0 0 20px;}
+  .opt{
+    display:flex; align-items:center; gap:14px; width:100%;
+    background:var(--card); border:1.5px solid var(--line); border-radius:12px;
+    padding:17px 18px; margin-bottom:12px; cursor:pointer; min-height:44px;
+    font-size:.92em; text-align:left; color:var(--ink); transition:all .15s; font-family:inherit;
+  }
+  .opt:active{transform:scale(.995);}
+  .opt.sel{border-color:var(--brand); background:var(--brand-soft); box-shadow:inset 0 0 0 1px var(--brand);}
+  .opt .box{
+    flex:0 0 24px; height:24px; border:2px solid #BBC8D8; border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; transition:all .15s;
+  }
+  .opt.sel .box{background:var(--brand); border-color:var(--brand);}
+  .opt.single .box{border-radius:50%;}
+  .nav{display:flex; gap:12px; margin-top:26px;}
+  button.btn{
+    flex:1; border:none; border-radius:12px; padding:17px; font-size:.95em; font-weight:700;
+    cursor:pointer; font-family:inherit; transition:all .15s; letter-spacing:.2px; min-height:44px;
+  }
+  .btn-primary{background:var(--brand); color:#fff; box-shadow:0 2px 6px rgba(43,108,176,.25);}
+  .btn-primary:disabled{background:#B5C3D4; box-shadow:none; cursor:not-allowed;}
+  .btn-primary:not(:disabled):active{background:var(--brand-d);}
+  .btn-ghost{flex:0 0 auto; background:var(--brand-soft); color:var(--brand-d); padding:17px 22px; border:1.5px solid var(--line);}
+  /* result */
+  .result-banner{border-radius:var(--radius); padding:22px 20px; margin-bottom:18px; display:flex; align-items:center; gap:16px;}
+  .result-banner .level-tag{
+    flex:0 0 56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    font-size:28px; font-weight:800; color:#fff;
+  }
+  .result-banner .rtext h2{margin:0 0 3px; font-size:1.08em; line-height:1.35;}
+  .result-banner .rtext p{margin:0; font-size:.78em; font-weight:600; opacity:.92;}
+  .lv-red{background:var(--red-bg); color:var(--red); border:1.5px solid var(--red-line);}
+  .lv-red .level-tag{background:var(--red);}
+  .lv-amber{background:var(--amber-bg); color:var(--amber); border:1.5px solid var(--amber-line);}
+  .lv-amber .level-tag{background:var(--amber);}
+  .lv-green{background:var(--green-bg); color:var(--green); border:1.5px solid var(--green-line);}
+  .lv-green .level-tag{background:var(--green);}
+  /* การแจ้งเตือนเร่งด่วน — เด่นชัด */
+  .alert-strong{
+    background:var(--red); color:#fff; border-radius:var(--radius); padding:20px;
+    margin-bottom:16px; display:flex; gap:14px; align-items:flex-start;
+    box-shadow:0 4px 14px rgba(192,57,43,.3); animation:pulse 1.6s ease-in-out infinite;
+  }
+  .alert-strong .ai{flex:0 0 34px; height:34px; border:3px solid #fff; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;}
+  .alert-strong .at{font-size:.92em; font-weight:700; line-height:1.5;}
+  @keyframes pulse{0%,100%{box-shadow:0 4px 14px rgba(192,57,43,.3);} 50%{box-shadow:0 4px 22px rgba(192,57,43,.55);}}
+  @media (prefers-reduced-motion: reduce){ .alert-strong{animation:none;} .fade{animation:none;} }
+  .advice{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:16px;}
+  .advice h3{margin:0 0 12px; font-size:.86em; color:var(--brand-d); padding-bottom:10px; border-bottom:1px solid var(--line);}
+  .advice ul{margin:0; padding-left:20px;}
+  .advice li{margin-bottom:10px; font-size:.84em;}
+  .reasons{font-size:.78em; color:var(--muted); background:var(--brand-soft); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:16px;}
+  .reasons b{color:var(--ink); display:block; margin-bottom:8px; font-size:1.03em;}
+  .call{display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; text-align:center; background:var(--red); color:#fff; font-weight:800; font-size:1.05em; padding:18px; border-radius:12px; margin-bottom:16px; letter-spacing:.3px; min-height:44px;}
+  .call .num{font-size:1.3em;}
+  .disclaimer{font-size:.7em; color:var(--muted); background:var(--brand-soft); border:1px solid var(--line); border-radius:12px; padding:15px 17px; line-height:1.65;}
+  .disclaimer b{color:var(--ink);}
+  /* ค้นหาสถานพยาบาล */
+  .facility{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:16px;}
+  .facility h3{margin:0 0 14px; font-size:.86em; color:var(--brand-d); padding-bottom:10px; border-bottom:1px solid var(--line);}
+  .btn-find{width:100%; border:none; background:var(--brand); color:#fff; font-family:inherit; font-weight:700; font-size:.9em; padding:16px; border-radius:12px; cursor:pointer; letter-spacing:.2px; transition:background .15s; min-height:44px;}
+  .btn-find:active{background:var(--brand-d);}
+  .facility-note{font-size:.72em; color:var(--muted); margin:12px 2px 0; line-height:1.6;}
+  .hotlines{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .hotline{display:flex; align-items:center; gap:14px; text-decoration:none; background:var(--brand-soft); border:1px solid var(--line); border-radius:12px; padding:14px 16px; transition:background .15s; min-height:44px;}
+  .hotline:active{background:#dde9f8;}
+  .hl-num{flex:0 0 auto; font-size:1.1em; font-weight:800; color:var(--brand-d); letter-spacing:.5px;}
+  .hl-label{font-size:.72em; color:var(--ink); line-height:1.4;}
+  .facility-hint{font-size:.64em; color:var(--muted); margin:14px 2px 0; line-height:1.55;}
+  /* กล่องความรู้เชิงอ้างอิง */
+  .know-wrap{margin-bottom:16px;}
+  .know-title{font-size:.86em; margin:0 0 11px; color:var(--brand-d); padding-bottom:9px; border-bottom:2px solid var(--brand); display:inline-block;}
+  .kbox{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:10px; padding:16px 18px; margin-bottom:11px;}
+  .khead{font-weight:700; font-size:.84em; margin-bottom:7px; color:var(--brand-d);}
+  .kbody{font-size:.8em; color:var(--ink); line-height:1.75;}
+  .refmark{color:var(--brand); font-weight:700; font-size:.62em; margin-left:2px;}
+  .refs{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px 18px; margin-bottom:16px;}
+  .refs summary{cursor:pointer; font-weight:700; font-size:.78em; padding:14px 0; color:var(--brand-d);}
+  .refs summary::marker{color:var(--brand);}
+  .reflist{margin:0 0 14px; padding-left:4px; list-style:none;}
+  .reflist li{font-size:.68em; color:var(--muted); line-height:1.6; margin-bottom:10px; padding-left:2px;}
+  .refnum{color:var(--brand); font-weight:700; margin-right:4px;}
+  footer{text-align:center; font-size:.64em; color:var(--muted); padding:18px 16px; line-height:1.6;}
+  .intro h2{margin:4px 0 14px; font-size:1.2em; color:var(--brand-d); line-height:1.4;}
+  .intro .lead{font-size:.88em; color:var(--ink);}
+  .intro ul{padding-left:20px; margin:14px 0;} .intro li{margin-bottom:10px; font-size:.84em;}
+  .fade{animation:fade .22s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="mark">HC</div>
+      <div>
+        <h1>แบบประเมินอาการเบื้องต้น</h1>
+        <p>เครื่องมือช่วยคัดกรองระดับความเร่งด่วน (ไม่ใช่การวินิจฉัยทางการแพทย์)</p>
+      </div>
+    </div>
+    <div class="a11y-bar" role="group" aria-label="การตั้งค่าการเข้าถึง">
+      <span class="lbl">ขนาดตัวอักษร</span>
+      <button class="a11y-btn" onclick="setFont(-1)" aria-label="ลดขนาดตัวอักษร">A−</button>
+      <button class="a11y-btn big" onclick="setFont(0)" aria-label="ขนาดตัวอักษรปกติ">A</button>
+      <button class="a11y-btn" onclick="setFont(1)" aria-label="เพิ่มขนาดตัวอักษร">A+</button>
+      <button class="a11y-btn" id="hcBtn" onclick="toggleContrast()" aria-pressed="false" aria-label="สลับโหมดคอนทราสต์สูง">คอนทราสต์สูง</button>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+  </header>
+  <main id="main"></main>
+  <footer>ใช้เพื่อการประเมินเบื้องต้นเท่านั้น หากไม่แน่ใจหรือมีอาการรุนแรง โปรดไปสถานพยาบาลที่ใกล้ที่สุด หรือโทร 1669</footer>
+</div>
+
+<script>
+/* ============================================================
+   LOGIC การประเมิน — หลัก "ปลอดภัยไว้ก่อน"
+   แบ่ง 3 ระดับ:
+     RED   = เร่งด่วน ต้องมาโรงพยาบาลทันที / โทร 1669
+     AMBER = ควรพบแพทย์ภายใน 1 วัน
+     GREEN = ดูแลตนเองที่บ้านได้และสังเกตอาการ
+   ฐานข้อมูลอ้างอิง: ER01.xlsx + Med มค.xlsx
+   (อาการพบบ่อย: เหนื่อย/หายใจลำบาก, เจ็บหน้าอก, ชัก/ซึม/หมดสติ,
+    อ่อนแรง/ปากเบี้ยว, ไข้, ปวดท้อง/อาเจียน/ถ่ายเหลว, เวียนศีรษะ ฯลฯ)
+   ============================================================ */
+
+const QUESTIONS = [
+  {
+    id:'main', type:'single',
+    title:'ขณะนี้ท่านมีอาการสำคัญในกลุ่มใดมากที่สุด',
+    sub:'โปรดเลือก 1 ข้อที่ตรงกับอาการมากที่สุด',
+    options:[
+      {v:'resp',  label:'เหนื่อย หายใจลำบาก หรือไอ'},
+      {v:'chest', label:'เจ็บหรือแน่นหน้าอก'},
+      {v:'neuro', label:'เวียนศีรษะ ปวดศีรษะ หรืออ่อนแรง'},
+      {v:'gi',    label:'ปวดท้อง คลื่นไส้อาเจียน หรือถ่ายเหลว'},
+      {v:'fever', label:'มีไข้ หรือตัวร้อน'},
+      {v:'pain',  label:'ปวดตามร่างกาย หรืออาการอื่น ๆ'},
+    ]
+  },
+  {
+    id:'redflag', type:'multi',
+    title:'ขณะนี้ท่านมีสัญญาณเตือนอันตรายข้อใดบ้าง',
+    sub:'เลือกได้มากกว่า 1 ข้อ หากไม่มี โปรดเลือก "ไม่มีข้อใด"',
+    options:[
+      {v:'rf_breath', label:'หายใจไม่ออก หอบมาก หรือริมฝีปากเขียวซีด'},
+      {v:'rf_chest',  label:'เจ็บแน่นหน้าอกรุนแรง หรือร้าวไปแขนและกราม'},
+      {v:'rf_stroke', label:'ปากเบี้ยว แขนขาอ่อนแรง หรือพูดไม่ชัดอย่างเฉียบพลัน'},
+      {v:'rf_conscious', label:'ชัก ซึมลง หรือเรียกแล้วไม่รู้สึกตัว'},
+      {v:'rf_bleed',  label:'อาเจียนหรือถ่ายเป็นเลือด หรือเลือดออกไม่หยุด'},
+      {v:'rf_none',   label:'ไม่มีอาการดังกล่าวข้างต้น', clears:true},
+    ]
+  },
+  {
+    id:'onset', type:'single',
+    title:'อาการเป็นมานานเพียงใด และมีแนวโน้มอย่างไร',
+    sub:'โปรดเลือก 1 ข้อ',
+    options:[
+      {v:'acute_worse', label:'เพิ่งเป็นอย่างเฉียบพลัน และกำลังแย่ลงอย่างรวดเร็ว'},
+      {v:'days_stable', label:'เป็นมา 1–3 วัน อาการคงที่หรือค่อย ๆ ดีขึ้น'},
+      {v:'mild',        label:'เป็นเพียงเล็กน้อย ยังทำกิจวัตรได้ตามปกติ'},
+    ]
+  },
+  {
+    id:'severity', type:'single',
+    title:'ความรุนแรงของอาการในขณะนี้',
+    sub:'ประเมินจากความรู้สึกและผลกระทบต่อการใช้ชีวิต',
+    options:[
+      {v:'severe',   label:'รุนแรงมาก ทรมาน หรือลุกเดิน รับประทานอาหารไม่ไหว'},
+      {v:'moderate', label:'ปานกลาง รบกวนการใช้ชีวิตพอสมควร'},
+      {v:'mildsev',  label:'เล็กน้อย พอทนได้ ยังใช้ชีวิตได้ตามปกติ'},
+    ]
+  },
+  {
+    id:'risk', type:'multi',
+    title:'ท่านมีปัจจัยเสี่ยงข้อใดบ้าง',
+    sub:'เลือกได้มากกว่า 1 ข้อ หากไม่มี โปรดเลือก "ไม่มีข้อใด"',
+    options:[
+      {v:'rk_age',   label:'อายุมากกว่า 65 ปี หรือเป็นเด็กเล็กกว่า 5 ปี'},
+      {v:'rk_chronic',label:'มีโรคประจำตัว เช่น หัวใจ ปอด เบาหวาน ไต หรือมะเร็ง'},
+      {v:'rk_preg',  label:'กำลังตั้งครรภ์'},
+      {v:'rk_fever', label:'ไข้สูงเกิน 39 องศาเซลเซียส หรือไข้นานเกิน 3 วัน'},
+      {v:'rk_none',  label:'ไม่มีอาการดังกล่าวข้างต้น', clears:true},
+    ]
+  },
+];
+
+/* --- เครื่องประเมินผล --- */
+function evaluate(a){
+  const reasons = [];
+  let level = 'green';
+  const bump = (lv) => {
+    const order = {green:0, amber:1, red:2};
+    if (order[lv] > order[level]) level = lv;
+  };
+
+  const rf = a.redflag || [];
+  const rk = a.risk || [];
+  const RF = {
+    rf_breath:'หายใจไม่ออก หอบมาก หรือริมฝีปากเขียวซีด',
+    rf_chest:'เจ็บแน่นหน้าอกรุนแรง หรือร้าวไปแขนและกราม',
+    rf_stroke:'ปากเบี้ยว อ่อนแรง หรือพูดไม่ชัดอย่างเฉียบพลัน',
+    rf_conscious:'ชัก ซึมลง หรือไม่รู้สึกตัว',
+    rf_bleed:'อาเจียนหรือถ่ายเป็นเลือด หรือเลือดออกไม่หยุด',
+  };
+
+  // 1) RED FLAG ใด ๆ -> เร่งด่วนทันที (ปลอดภัยไว้ก่อน)
+  const activeRf = rf.filter(x => x !== 'rf_none');
+  if (activeRf.length){
+    bump('red');
+    activeRf.forEach(x => reasons.push('พบสัญญาณเตือนอันตราย ได้แก่ ' + RF[x]));
+  }
+
+  // 2) อาการเฉียบพลันและแย่ลงเร็ว
+  if (a.onset === 'acute_worse'){
+    bump('amber');
+    reasons.push('อาการเกิดขึ้นอย่างเฉียบพลันและมีแนวโน้มแย่ลงอย่างรวดเร็ว');
+    // เฉียบพลัน+แย่ลง ร่วมกับอาการกลุ่มเสี่ยงสูง หรือ รุนแรงมาก -> เร่งด่วน
+    if (a.severity === 'severe' || a.main === 'chest' || a.main === 'resp' || a.main === 'neuro'){
+      bump('red');
+      reasons.push('อาการสำคัญอยู่ในกลุ่มที่ควรได้รับการประเมินโดยเร็ว');
+    }
+  }
+
+  // 3) ความรุนแรง
+  if (a.severity === 'severe'){
+    bump('amber');
+    reasons.push('อาการรุนแรงมาก ทรมาน หรือไม่สามารถทำกิจวัตรได้');
+    // รุนแรงมาก + กลุ่มเสี่ยง -> เร่งด่วน
+    if (rk.some(x => x !== 'rk_none')){
+      bump('red');
+    }
+  } else if (a.severity === 'moderate'){
+    bump('amber');
+    reasons.push('อาการอยู่ในระดับปานกลาง รบกวนการใช้ชีวิตประจำวัน');
+  }
+
+  // 4) ปัจจัยเสี่ยง
+  const activeRk = rk.filter(x => x !== 'rk_none');
+  const RK = {
+    rk_age:'อายุมาก/เด็กเล็ก',
+    rk_chronic:'มีโรคประจำตัว',
+    rk_preg:'กำลังตั้งครรภ์',
+    rk_fever:'ไข้สูงหรือไข้เรื้อรัง',
+  };
+  if (activeRk.length){
+    activeRk.forEach(x => reasons.push('มีปัจจัยเสี่ยง ได้แก่ ' + RK[x]));
+    // ถ้ายังเป็นแค่ green แต่มีความเสี่ยง -> ยกเป็น amber
+    if (level === 'green') bump('amber');
+    // ไข้สูง/เรื้อรัง ร่วมกับอาการแย่ลง -> อย่างน้อย amber (มีแล้ว)
+  }
+
+  // 5) ไข้สูงเกิน 39 หรือเกิน 3 วัน (เน้นจากข้อมูลไข้พบบ่อย)
+  if (rk.includes('rk_fever') && (a.main === 'fever' || a.main === 'resp')){
+    bump('amber');
+    reasons.push('มีไข้สูงหรือไข้เรื้อรังร่วมกับอาการทางเดินหายใจหรืออาการไข้');
+  }
+
+  if (!reasons.length){
+    reasons.push('ไม่พบสัญญาณเตือนอันตรายหรือปัจจัยเสี่ยงที่ชัดเจน');
+  }
+
+  // รวบรวม "ธงอาการ" เพื่อเลือกคำอธิบายเหตุผลเชิงอ้างอิง (knowledge box)
+  const flags = [];
+  if (rf.includes('rf_stroke') || a.main === 'neuro') flags.push('stroke');
+  if (rf.includes('rf_chest') || a.main === 'chest') flags.push('chest');
+  if (rf.includes('rf_breath') || a.main === 'resp') flags.push('breath');
+  if (rf.includes('rf_conscious')) flags.push('conscious');
+  if (rf.includes('rf_bleed') || a.main === 'gi') flags.push('gi');
+  if (a.main === 'fever' || rk.includes('rk_fever')) flags.push('fever');
+
+  return {level, reasons, flags};
+}
+
+const RESULTS = {
+  red:{
+    cls:'lv-red', num:'1', head:'เร่งด่วน ควรไปโรงพยาบาลทันที',
+    tag:'ระดับที่ 1 : ภาวะฉุกเฉิน',
+    advice:[
+      'โทรแจ้งสายด่วนการแพทย์ฉุกเฉิน 1669 หรือไปห้องฉุกเฉินที่ใกล้ที่สุดโดยทันที',
+      'ไม่ควรขับรถด้วยตนเอง และควรมีผู้ดูแลอยู่ด้วยตลอดเวลา',
+      'เตรียมรายการยาที่ใช้ประจำและประวัติการแพ้ยาไปแสดงต่อเจ้าหน้าที่',
+      'หากผู้ป่วยไม่รู้สึกตัวหรือไม่หายใจ ให้โทร 1669 และเริ่มการช่วยฟื้นคืนชีพทันที',
+    ],
+    showCall:true,
+  },
+  amber:{
+    cls:'lv-amber', num:'2', head:'ควรเข้าพบแพทย์ภายใน 1 วัน',
+    tag:'ระดับที่ 2 : ควรรีบเข้ารับการตรวจ',
+    advice:[
+      'ควรเข้าพบแพทย์หรือพยาบาลที่สถานพยาบาลภายในวันนี้',
+      'เฝ้าสังเกตอาการอย่างใกล้ชิด หากอาการแย่ลง ให้ไปโรงพยาบาลทันที',
+      'พักผ่อนให้เพียงพอ ดื่มน้ำให้เหมาะสม และหลีกเลี่ยงการอยู่ตามลำพัง',
+      'บันทึกอาการ ช่วงเวลาที่เกิดอาการ และยาที่รับประทาน เพื่อแจ้งต่อแพทย์',
+    ],
+    showCall:false,
+  },
+  green:{
+    cls:'lv-green', num:'3', head:'สามารถดูแลตนเองที่บ้านและเฝ้าสังเกตอาการได้',
+    tag:'ระดับที่ 3 : ดูแลตนเองที่บ้าน',
+    advice:[
+      'พักผ่อนให้เพียงพอ ดื่มน้ำให้มาก และรับประทานอาหารที่ย่อยง่าย',
+      'สามารถใช้ยาสามัญประจำบ้านตามอาการได้ เช่น ยาลดไข้พาราเซตามอล',
+      'เฝ้าสังเกตอาการ 1–2 วัน หากไม่ดีขึ้นหรือมีอาการแย่ลง ควรเข้าพบแพทย์',
+      'หากเกิดสัญญาณเตือนอันตราย เช่น หายใจลำบาก เจ็บหน้าอก หรือซึมลง ให้ไปโรงพยาบาลทันที',
+    ],
+    showCall:false,
+  },
+};
+
+/* ============================================================
+   KNOWLEDGE — "คำอธิบายเหตุผลเชิงอ้างอิง" (แบบที่ 2)
+   แสดงกล่องความรู้ตามกลุ่มอาการ เพื่อให้ผู้ป่วยเข้าใจว่า
+   "ทำไมต้องรีบ" พร้อมอ้างอิงแหล่งที่ตรวจสอบได้
+   แต่ละข้อระบุ ref = เลขอ้างอิงที่ตรงกับรายการ REFERENCES ด้านล่าง
+   ============================================================ */
+const KNOWLEDGE = {
+  stroke:{
+    title:'เหตุผลที่อาการโรคหลอดเลือดสมองต้องได้รับการประเมินโดยเร็ว',
+    body:'สัญญาณเตือนโรคหลอดเลือดสมองสามารถสังเกตได้ตามหลัก <b>F.A.S.T.</b> ได้แก่ '
+      +'<b>Face</b> ใบหน้าเบี้ยวมุมปากตก, <b>Arm</b> แขนขาอ่อนแรงครึ่งซีก, '
+      +'<b>Speech</b> พูดไม่ชัดหรือนึกคำไม่ออก และ <b>Time</b> ควรรีบขอความช่วยเหลือทันที '
+      +'อาจพบอาการตามัว เห็นภาพซ้อน เวียนศีรษะ หรือเดินเซร่วมด้วย '
+      +'หากอาการเกิดขึ้น<b>อย่างเฉียบพลันภายใน 0–24 ชั่วโมง</b> ควรไปโรงพยาบาลให้เร็วที่สุด '
+      +'เนื่องจากการรักษาที่ทันเวลาช่วยลดความอันตรายและเพิ่มโอกาสในการฟื้นตัว',
+    refs:[1,2,3],
+  },
+  chest:{
+    title:'เหตุผลที่อาการเจ็บแน่นหน้าอกต้องได้รับการประเมินโดยเร็ว',
+    body:'อาการเจ็บหรือแน่นบริเวณกลางหน้าอก รู้สึกเหมือนถูกบีบรัดหรือกดทับ นานเกินกว่าสองสามนาที '
+      +'หรือเป็น ๆ หาย ๆ อาจร้าวไปที่แขน กราม หรือหลัง ร่วมกับเหงื่อออก คลื่นไส้ หรือหายใจไม่อิ่ม '
+      +'อาจเป็นสัญญาณของ<b>ภาวะหัวใจขาดเลือดเฉียบพลัน</b> ซึ่งเป็นภาวะฉุกเฉิน '
+      +'การได้รับการรักษาที่รวดเร็วช่วยลดความเสียหายของกล้ามเนื้อหัวใจ จึงควรโทร 1669 ทันทีโดยไม่รอดูอาการ',
+    refs:[2,4],
+  },
+  breath:{
+    title:'เหตุผลที่อาการหายใจลำบากต้องเฝ้าระวัง',
+    body:'หากหายใจไม่ออก หอบเหนื่อยมากขณะพัก พูดเป็นประโยคไม่ได้ หรือริมฝีปากและปลายมือเขียวซีด '
+      +'อาจแสดงว่าร่างกายได้รับออกซิเจนไม่เพียงพอ ซึ่งเป็นภาวะอันตรายที่ต้องได้รับการประเมินทันที '
+      +'โดยเฉพาะในผู้ที่มีโรคหัวใจหรือโรคปอดเดิม',
+    refs:[2,5],
+  },
+  conscious:{
+    title:'เหตุผลที่อาการชัก ซึมลง หรือไม่รู้สึกตัวต้องได้รับการช่วยเหลือโดยด่วน',
+    body:'อาการชัก ซึมลง หรือเรียกแล้วไม่รู้สึกตัว อาจเกิดจากความผิดปกติของสมอง หัวใจ '
+      +'ระดับน้ำตาลในเลือด หรือการติดเชื้อรุนแรง หากพบว่าผู้ป่วยไม่หายใจหรือไม่ตอบสนอง '
+      +'ให้โทร 1669 และเริ่มการช่วยฟื้นคืนชีพ (CPR) ทันที',
+    refs:[2,6],
+  },
+  gi:{
+    title:'กรณีที่อาการทางระบบทางเดินอาหารจัดเป็นภาวะเร่งด่วน',
+    body:'หากมีการอาเจียนหรือถ่ายเป็นเลือด ปวดท้องรุนแรงอย่างเฉียบพลัน หรือมีสัญญาณขาดน้ำรุนแรง '
+      +'เช่น อ่อนเพลียมาก ปัสสาวะน้อย หรือซึมลง ควรไปโรงพยาบาลทันที '
+      +'ส่วนอาการท้องเสียหรืออาเจียนทั่วไป ควรดื่มสารละลายเกลือแร่ (ORS) เพื่อป้องกันภาวะขาดน้ำ และเฝ้าสังเกตอาการ',
+    refs:[6,7],
+  },
+  fever:{
+    title:'ลักษณะของไข้ที่ควรเข้าพบแพทย์',
+    body:'โดยทั่วไปไข้ (อุณหภูมิกายตั้งแต่ 38 องศาเซลเซียสขึ้นไป) เป็นปฏิกิริยาต่อการติดเชื้อและมักหายได้เอง '
+      +'อย่างไรก็ตาม ควรเข้าพบแพทย์หากมี<b>ไข้สูงมาก (ตั้งแต่ 39–40 องศาเซลเซียส)</b> '
+      +'ไข้นานเกิน 3 วัน หรือมีอาการเตือนร่วม เช่น ซึมลง หอบเหนื่อย ชัก คอแข็ง '
+      +'หรืออยู่ในกลุ่มเสี่ยง เช่น เด็กเล็ก ผู้สูงอายุ สตรีมีครรภ์ หรือผู้มีโรคประจำตัว',
+    refs:[7,8],
+  },
+};
+
+/* ============================================================
+   REFERENCES — แหล่งอ้างอิงที่ตรวจสอบได้
+   หมายเหตุ: รายการ STEMI, NS-00-3-221 และ University Triage Manual
+   อ้างอิงตามชื่อเอกสารของหน่วยงาน (เนื้อหา PDF อ่านอัตโนมัติไม่ได้)
+   ============================================================ */
+const REFERENCES = [
+  /* 1 */ 'โรงพยาบาลศิริราช คณะแพทยศาสตร์ศิริราชพยาบาล ม.มหิดล. "FLOW OPD Siriraj Stroke Fast Track" — เกณฑ์: สงสัยโรคหลอดเลือดสมอง, POCT glucose 50–400 mg%, Onset เฉียบพลันภายใน 0–24 ชั่วโมง.',
+  /* 2 */ 'American Heart Association / American Stroke Association. Heart Attack and Stroke Symptoms — heart.org, stroke.org.',
+  /* 3 */ 'National Institute of Neurological Disorders and Stroke (NINDS/NIH). Stroke: Signs and Symptoms — ผู้ป่วยที่สงสัย stroke ควรถึงโรงพยาบาลโดยเร็ว บางรายได้ประโยชน์จากการรักษาได้ถึง 24 ชั่วโมง. ninds.nih.gov.',
+  /* 4 */ 'Mayo Clinic. Heart attack symptoms: Know what\'s a medical emergency — mayoclinic.org.',
+  /* 5 */ 'สถาบันการแพทย์ฉุกเฉินแห่งชาติ (สพฉ.) — สายด่วนการแพทย์ฉุกเฉิน โทร 1669 ตลอด 24 ชั่วโมงทั่วประเทศ.',
+  /* 6 */ 'World Health Organization (WHO) / แนวทางปฐมพยาบาลภาวะฉุกเฉิน — การประเมินสัญญาณอันตราย (danger signs) และการช่วยฟื้นคืนชีพเบื้องต้น.',
+  /* 7 */ 'Mayo Clinic. Dehydration — Diagnosis & treatment; Fever — Symptoms & causes. mayoclinic.org.',
+  /* 8 */ 'แนวทางเวชปฏิบัติ: ไข้ ≥ 38°C ถือเป็นไข้; ควรรีบพบแพทย์เมื่อไข้สูง ≥ 39–40°C หรือไข้นานเกิน 3 วัน หรือมีสัญญาณเตือนร่วม (อ้างอิง Harvard Health, Johns Hopkins Medicine).',
+  /* 9 */ 'เอกสาร STEMI ER Siriraj (6. MI ER SI revise 24 Feb 26) — เกณฑ์/กรอบเวลา activate STEMI fast track.',
+  /* 10 */ 'NS-00-3-221-00 แนวปฏิบัติการคัดกรองและการบริการพยาบาลส่วนหน้า — นิยามระดับความเร่งด่วนตามเอกสารของหน่วยงาน.',
+  /* 11 */ 'AHA PREVENT™ Risk Calculator (ประเมินความเสี่ยงโรคหัวใจ-หลอดเลือดระยะยาว ไม่ใช่การคัดกรองฉุกเฉิน) — professional.heart.org.',
+  /* 12 */ 'University Triage Manual (university_triage_manual.pdf) — คู่มือการคัดกรองผู้ป่วย: เกณฑ์/ระดับความเร่งด่วนตามคู่มือของมหาวิทยาลัย.',
+];
+const state = { step:0, answers:{} };
+const main = document.getElementById('main');
+const bar  = document.getElementById('bar');
+const TOTAL = QUESTIONS.length;
+
+function setBar(){
+  const pct = state.step === -1 ? 0 : Math.round((state.step)/(TOTAL)*100);
+  bar.style.width = (state.step>=TOTAL ? 100 : pct) + '%';
+}
+
+function renderIntro(){
+  state.step = -1; setBar();
+  main.innerHTML = `
+    <div class="card fade intro">
+      <h2>การประเมินอาการก่อนเข้ารับบริการ</h2>
+      <p class="lead">โปรดตอบคำถามจำนวน 5 ข้อ เพื่อช่วยประเมินว่าอาการของท่าน
+         ควรรีบไปโรงพยาบาล ควรเข้าพบแพทย์ภายในวันนี้ หรือสามารถดูแลตนเองที่บ้านได้</p>
+      <ul>
+        <li>ใช้เวลาในการตอบประมาณ 1 นาที</li>
+        <li>โปรดตอบตามอาการ "ในขณะนี้" ให้ตรงที่สุด</li>
+        <li>ระบบออกแบบโดยคำนึงถึงความปลอดภัยเป็นหลัก หากไม่แน่ใจจะแนะนำให้เข้าพบแพทย์</li>
+      </ul>
+      <div class="disclaimer" style="margin-top:16px">
+        <b>คำชี้แจง:</b> เครื่องมือนี้ใช้เพื่อการประเมินเบื้องต้นเท่านั้น
+        <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> และไม่ทดแทนการตรวจรักษาโดยบุคลากรทางการแพทย์
+        หากมีอาการรุนแรงหรือสงสัยภาวะฉุกเฉิน โปรดโทร <b>1669</b> ทันที
+      </div>
+      <div class="nav">
+        <button class="btn btn-primary" onclick="startQuiz()">เริ่มการประเมิน</button>
+      </div>
+    </div>`;
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[state.step];
+  setBar();
+  const cur = state.answers[q.id];
+  const opts = q.options.map(o=>{
+    let sel = false;
+    if (q.type==='single') sel = cur===o.v;
+    else sel = Array.isArray(cur) && cur.includes(o.v);
+    const check = q.type==='single' ? '●' : '✓';
+    return `<button class="opt ${q.type==='single'?'single':''} ${sel?'sel':''}"
+      onclick="pick('${q.id}','${o.v}',${o.clears?'true':'false'})">
+      <span class="box">${sel?check:''}</span>
+      <span>${o.label}</span>
+    </button>`;
+  }).join('');
+
+  const canNext = q.type==='single'
+      ? !!cur
+      : Array.isArray(cur) && cur.length>0;
+
+  main.innerHTML = `
+    <div class="card fade">
+      <div class="step-count">คำถามที่ ${state.step+1} จาก ${TOTAL}</div>
+      <h2 class="q-title">${q.title}</h2>
+      <p class="q-sub">${q.sub}</p>
+      ${opts}
+      <div class="nav">
+        ${state.step>0?'<button class="btn btn-ghost" onclick="prev()">ย้อนกลับ</button>':''}
+        <button class="btn btn-primary" ${canNext?'':'disabled'} onclick="next()">
+          ${state.step===TOTAL-1?'ดูผลการประเมิน':'ถัดไป'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function pick(qid, val, clears){
+  const q = QUESTIONS.find(x=>x.id===qid);
+  if (q.type==='single'){
+    state.answers[qid] = val;
+  } else {
+    let arr = Array.isArray(state.answers[qid]) ? state.answers[qid].slice() : [];
+    if (clears){
+      // ตัวเลือก "ไม่มีข้อใดเลย" -> ล้างตัวเลือกอื่น
+      arr = arr.includes(val) ? [] : [val];
+    } else {
+      arr = arr.filter(v=>{
+        const opt = q.options.find(o=>o.v===v);
+        return !(opt && opt.clears); // ลบ "ไม่มีข้อใดเลย" ออกถ้าเลือกข้ออื่น
+      });
+      if (arr.includes(val)) arr = arr.filter(v=>v!==val);
+      else arr.push(val);
+    }
+    state.answers[qid] = arr;
+  }
+  renderQuestion();
+}
+
+function next(){
+  if (state.step < TOTAL-1){ state.step++; renderQuestion(); }
+  else { renderResult(); }
+}
+function prev(){ if (state.step>0){ state.step--; renderQuestion(); } }
+function startQuiz(){ state.step=0; state.answers={}; renderQuestion(); }
+
+/* เปิด Google Maps ค้นหาสถานพยาบาลใกล้ตำแหน่งปัจจุบันของผู้ใช้
+   query = คำค้น เช่น "โรงพยาบาล" หรือ "ห้องฉุกเฉิน โรงพยาบาล"
+   ใช้ตำแหน่ง GPS หากผู้ใช้อนุญาต มิฉะนั้นเปิดค้นหาแบบทั่วไป (Maps จะใช้ตำแหน่งโดยประมาณเอง) */
+function findFacility(query){
+  const q = encodeURIComponent(query);
+  const open = (url) => window.open(url, '_blank');
+  const generic = 'https://www.google.com/maps/search/' + q;
+  if (navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        open(`https://www.google.com/maps/search/${q}/@${latitude},${longitude},14z`);
+      },
+      () => open(generic),            // ผู้ใช้ไม่อนุญาตตำแหน่ง -> ค้นหาทั่วไป
+      { timeout: 8000 }
+    );
+  } else {
+    open(generic);
+  }
+}
+
+function renderResult(){
+  state.step = TOTAL; setBar();
+  const r = evaluate(state.answers);
+  const R = RESULTS[r.level];
+  const adv = R.advice.map(x=>`<li>${x}</li>`).join('');
+  const rs  = r.reasons.map(x=>`<li>${x}</li>`).join('');
+
+  // สร้างกล่องความรู้ "คำอธิบายเหตุผลเชิงอ้างอิง" ตามธงอาการ (ไม่ซ้ำ)
+  const seen = {};
+  const kboxes = (r.flags || []).filter(f=>{
+    if (seen[f] || !KNOWLEDGE[f]) return false; seen[f]=1; return true;
+  }).map(f=>{
+    const k = KNOWLEDGE[f];
+    const sup = k.refs.map(n=>`<sup class="refmark">[${n}]</sup>`).join('');
+    return `<div class="kbox">
+      <div class="khead">${k.title}${sup}</div>
+      <div class="kbody">${k.body}</div>
+    </div>`;
+  }).join('');
+
+  // รวมเลขอ้างอิงที่ถูกใช้จริง + ข้อ 5 (1669), 10 (เกณฑ์คัดกรองพยาบาล), 12 (คู่มือคัดกรอง ม.) เสมอ
+  const usedRefs = new Set([5, 10, 12]);
+  (r.flags || []).forEach(f => (KNOWLEDGE[f]?.refs || []).forEach(n => usedRefs.add(n)));
+  const refList = [...usedRefs].sort((a,b)=>a-b)
+    .map(n => `<li><span class="refnum">[${n}]</span> ${REFERENCES[n-1]}</li>`).join('');
+
+  // ส่วนค้นหาสถานพยาบาลใกล้บ้าน (แสดงทุกระดับ ปรับคำค้น/ข้อความตามระดับ)
+  const facility = {
+    red:   { q:'ห้องฉุกเฉิน โรงพยาบาล', btn:'ค้นหาห้องฉุกเฉิน / โรงพยาบาลที่ใกล้ที่สุด',
+             note:'กรณีฉุกเฉิน การโทร 1669 เพื่อเรียกรถพยาบาลเป็นวิธีที่ปลอดภัยและรวดเร็วที่สุด' },
+    amber: { q:'โรงพยาบาล คลินิก', btn:'ค้นหาโรงพยาบาล / คลินิกใกล้บ้าน',
+             note:'เลือกสถานพยาบาลตามสิทธิการรักษาของท่านเพื่อความสะดวกในการเข้ารับบริการ' },
+    green: { q:'ร้านยา คลินิก โรงพยาบาล', btn:'ค้นหาสถานพยาบาล / ร้านยาใกล้บ้าน',
+             note:'หากต้องการคำปรึกษาเพิ่มเติม สามารถสอบถามเภสัชกรหรือสถานพยาบาลใกล้บ้านได้' },
+  }[r.level];
+
+  const facilityBlock = `
+    <div class="facility">
+      <h3>ค้นหาสถานพยาบาลใกล้บ้าน</h3>
+      <button class="btn-find" onclick="findFacility('${facility.q}')">${facility.btn}</button>
+      <p class="facility-note">${facility.note}</p>
+      <div class="hotlines">
+        <a class="hotline" href="tel:1669"><span class="hl-num">1669</span><span class="hl-label">สายด่วนการแพทย์ฉุกเฉิน (สพฉ.)</span></a>
+        <a class="hotline" href="tel:1330"><span class="hl-num">1330</span><span class="hl-label">สายด่วน สปสช. สอบถามสิทธิและหน่วยบริการ</span></a>
+      </div>
+      <p class="facility-hint">ระบบจะเปิด Google Maps เพื่อแสดงสถานพยาบาลรอบตำแหน่งของท่าน (โปรดอนุญาตการเข้าถึงตำแหน่งเพื่อผลลัพธ์ที่แม่นยำ)</p>
+    </div>`;
+
+  main.innerHTML = `
+    <div class="fade">
+      ${r.level==='red' ? `<div class="alert-strong" role="alert">
+        <span class="ai" aria-hidden="true">!</span>
+        <span class="at">อาการของท่านอาจเป็นภาวะฉุกเฉิน โปรดรีบไปโรงพยาบาลหรือโทร 1669 ทันที</span>
+      </div>` : ''}
+      <div class="result-banner ${R.cls}" role="status" aria-live="polite">
+        <div class="level-tag" aria-hidden="true">${R.num}</div>
+        <div class="rtext">
+          <h2>${R.head}</h2>
+          <p>${R.tag}</p>
+        </div>
+      </div>
+      ${R.showCall?'<a class="call" href="tel:1669"><span class="num">1669</span> โทรแจ้งสายด่วนการแพทย์ฉุกเฉิน</a>':''}
+      <div class="advice">
+        <h3>คำแนะนำในการปฏิบัติตัว</h3>
+        <ul>${adv}</ul>
+      </div>
+      ${facilityBlock}
+      <div class="reasons">
+        <b>เหตุผลประกอบการประเมิน</b>
+        <ul style="margin:0; padding-left:18px;">${rs}</ul>
+      </div>
+      ${kboxes ? `<div class="know-wrap"><h3 class="know-title">ความรู้และเหตุผลเชิงอ้างอิง</h3>${kboxes}</div>` : ''}
+      <details class="refs">
+        <summary>แหล่งอ้างอิง (ตรวจสอบได้)</summary>
+        <ol class="reflist">${refList}</ol>
+      </details>
+      <div class="disclaimer">
+        <b>ข้อควรทราบ:</b> ผลการประเมินนี้ได้จากคำถามจำนวนจำกัด จึงเป็นเพียงการประเมินเบื้องต้น
+        <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> อาการบางอย่างอาจมีความรุนแรงมากกว่าที่ประเมินได้
+        หากท่านรู้สึกไม่ปลอดภัยหรืออาการแย่ลง โปรดไปโรงพยาบาลหรือโทร <b>1669</b> ทันทีโดยไม่ต้องรอ
+      </div>
+      <div class="nav">
+        <button class="btn btn-primary" onclick="renderIntro()">ประเมินใหม่อีกครั้ง</button>
+      </div>
+    </div>`;
+}
+
+/* ===== Accessibility: ปรับขนาดตัวอักษร และโหมดคอนทราสต์สูง ===== */
+const FONT_STEPS = [16, 18, 20, 23];   // px (ค่ากลาง 18 = ปกติ)
+let fontIdx = 1;
+
+function applyFont(){
+  document.documentElement.style.setProperty('--fs', FONT_STEPS[fontIdx] + 'px');
+  try { localStorage.setItem('triage_font', String(fontIdx)); } catch(e){}
+}
+function setFont(dir){
+  if (dir === 0) fontIdx = 1;                              // ปุ่ม A = รีเซ็ตเป็นปกติ
+  else fontIdx = Math.max(0, Math.min(FONT_STEPS.length-1, fontIdx + dir));
+  applyFont();
+}
+function toggleContrast(){
+  const on = document.body.classList.toggle('hc');
+  const btn = document.getElementById('hcBtn');
+  if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  try { localStorage.setItem('triage_hc', on ? '1' : '0'); } catch(e){}
+  return on;
+}
+function restorePrefs(){
+  try {
+    const f = localStorage.getItem('triage_font');
+    if (f !== null){ fontIdx = Math.max(0, Math.min(FONT_STEPS.length-1, parseInt(f,10)||1)); }
+    if (localStorage.getItem('triage_hc') === '1'){
+      document.body.classList.add('hc');
+      const btn = document.getElementById('hcBtn');
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e){}
+  applyFont();
+}
+
+// เริ่มต้น
+restorePrefs();
+renderIntro();
+</script>
+</body>
+</html>
